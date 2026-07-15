@@ -1,0 +1,154 @@
+server:
+  host: 127.0.0.1
+  port: 8000
+
+spring:
+  application:
+    name: integration-dashboard
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:qa}
+  config:
+    import: "optional:configtree:/etc/secrets/fscart-secret/,optional:configtree:/etc/configmap/fishersci-cart-backend-config/"
+  datasource:
+    hikari:
+      connection-timeout: 5000
+      minimum-idle: 1
+      maximum-pool-size: 5
+      idle-timeout: 300000
+      max-lifetime: 1200000
+      read-only: true
+
+dashboard:
+  datasource:
+    url: ${DATABASE_URL:}
+  local-store: data/scripts.json
+
+cart-preview:
+  table: ORDERITEMS
+  limit: 10
+  read-only: true
+  excluded-fields:
+    - orders_id
+    - orderitems_id
+    - accountnumber
+    - user_id
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local-dev
+  datasource:
+    url: jdbc:postgresql://db.fscom.dev.database.wr.clouddev.fishersci.net:5432/fscart_db_1?currentSchema=fscart
+    username: fscartapp
+    password: ${secret.spring.datasource.password}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:postgresql://db.fscom.dev.database.wr.clouddev.fishersci.net:5432/fscart_db_1?currentSchema=fscart
+    username: fscartapp
+    password: ${secret.spring.datasource.password}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local-qa
+  datasource:
+    url: jdbc:postgresql://db.cart.wr.cloudqa.fishersci.net:5432/fscart_db_3?currentSchema=fscart
+    username: fscartapp
+    password: ${secret.spring.datasource.password}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: qa
+  datasource:
+    url: jdbc:postgresql://db.cart.wr.cloudqa.fishersci.net:5432/fscart_db_3?currentSchema=fscart
+    username: fscartapp
+    password: ${secret.spring.datasource.password}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: uat
+  datasource:
+    url: jdbc:postgresql://db.cart.wr.cloudqa.fishersci.net:5432/fscart_db_2?currentSchema=fscart
+    username: fscartapp
+    password: ${secret.spring.datasource.password}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: jdbc:postgresql://db.cart.wr.cloudprod.fishersci.net:5432/fscart_db?currentSchema=fscart
+    username: fscartapp
+    password: ${secret.spring.datasource.password}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod_cloud
+  datasource:
+    url: jdbc:postgresql://db.cart.wr.cloudprod.fishersci.net:5432/fscart_db?currentSchema=fscart
+    username: fscartapp
+    password: ${secret.spring.datasource.password}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev_eu
+  datasource:
+    url: jdbc:postgresql://db.cart.wr.cloudqa.eu.fishersci.net:5432/fscart?currentSchema=fsctapp
+    username: fsctapp
+    password: ${secret.spring.datasource.password.eu}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: qa_eu
+  datasource:
+    url: jdbc:postgresql://db.cart.wr.cloudqa.eu.fishersci.net:5432/fscart?currentSchema=fsctapp
+    username: fsctapp
+    password: ${secret.spring.datasource.password.eu}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: uat_eu
+  datasource:
+    url: jdbc:postgresql://db.cart.wr.cloudqa.eu.fishersci.net:5432/fscart_2?currentSchema=fscart
+    username: fsctapp
+    password: ${secret.spring.datasource.password.eu}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod_eu
+  datasource:
+    url: jdbc:postgresql://db.cart.wr.cloudprod.eu.fishersci.net:5432/fscart?currentSchema=fsctapp
+    username: fsctapp
+    password: ${secret.spring.datasource.password.eu}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod_cloud_eu
+  datasource:
+    url: jdbc:postgresql://db.cart.wr.cloudprod.eu.fishersci.net:5432/fscart?currentSchema=fsctapp
+    username: fsctapp
+    password: ${secret.spring.datasource.password.eu}

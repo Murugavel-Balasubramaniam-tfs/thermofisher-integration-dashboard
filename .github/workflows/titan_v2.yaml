@@ -1,0 +1,13 @@
+name: Titan v2 Workflow
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - release/*
+      - feature/*
+
+jobs:
+  ci-cd:
+    uses: thermofisher/dpe-gha-workflows/.github/workflows/tfcom-fscom-pipeline-workflow.yaml@v1
+    secrets: inherit

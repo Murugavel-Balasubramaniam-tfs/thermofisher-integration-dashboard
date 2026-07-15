@@ -1,0 +1,84 @@
+build:
+  image: techops-docker-prod.ha-us.dso.thermofisher.net/python:3.10-slim
+  steps:
+    - python -m pip install --no-cache-dir -r requirements.txt
+    - python -m compileall -q server.py
+    - python -c "import yaml; docs=list(yaml.safe_load_all(open('application.yml'))); assert len(docs) == 13"
+
+containerBuild:
+  imageName: fscart/integration-dashboard
+
+deployment:
+  labels:
+    component: dashboard
+    sub_application: integration-dashboard
+    stack: python
+    part_of: fscart
+    stack_version: "3.10"
+    Project: fscart
+    Team: fscart
+    account_owner: DE.IT.DEV.Fishersci Cart
+    snow_support: DE.IT.DEV.Fishersci Cart
+    division: DPE
+    costcenter: 400.8620.8541
+    application_owner: PIT_FS_Cartel@thermofisher.com
+    website: www.fishersci.com
+  name: integration-dashboard
+  namespace: fscart
+  cpu: 250m
+  memory: 512Mi
+  replicas: 1
+  containerPort: 8000
+  healthCheckPath: /integration-dashboard/api/health
+  healthCheckPort: 8000
+  ingressPath: /integration-dashboard
+  forcesslRedirect: false
+  volumeMounts:
+    - name: fscart-secret
+      mountPath: /etc/secrets/fscart-secret
+      readOnly: true
+      volume:
+        type: secret
+        properties:
+          secretName: fscart-secret
+    - name: fishersci-cart-backend-config
+      mountPath: /etc/configmap/fishersci-cart-backend-config
+      volume:
+        type: configMap
+        properties:
+          name: fishersci-cart-backend-config
+
+environments:
+  qa:
+    securityScan: true
+    branch: release/.*
+    cluster: fscom-cluster-na-qa1.cloudqa.fishersci.net
+    env:
+      - name: SPRING_PROFILES_ACTIVE
+        value: qa
+      - name: HOST
+        value: 0.0.0.0
+      - name: PORT
+        value: "8000"
+      - name: BASE_PATH
+        value: /integration-dashboard
+      - name: FSCOM_CART_DATABASE_PASSWORD_FILE
+        value: /etc/secrets/fscart-secret/secret.spring.datasource.password
+    ingressDomains:
+      - fsct.fscom-cluster-na-qa1.cloudqa.fishersci.net
+  dev:
+    branch: feature/.*
+    cluster: fscom-cluster-na-dev1.clouddev.fishersci.net
+    env:
+      - name: SPRING_PROFILES_ACTIVE
+        value: dev
+      - name: HOST
+        value: 0.0.0.0
+      - name: PORT
+        value: "8000"
+      - name: BASE_PATH
+        value: /integration-dashboard
+      - name: FSCOM_CART_DATABASE_PASSWORD_FILE
+        value: /etc/secrets/fscart-secret/secret.spring.datasource.password
+    ingressDomains:
+      - fsct.fscom-cluster-na-dev1.clouddev.fishersci.net
