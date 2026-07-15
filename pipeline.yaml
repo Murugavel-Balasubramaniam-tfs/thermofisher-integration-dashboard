@@ -51,7 +51,7 @@ deployment:
 environments:
   qa:
     securityScan: true
-    branch: release/.*
+    branch: task/.*
     cluster: fscom-cluster-na-qa1.cloudqa.fishersci.net
     env:
       - name: SPRING_PROFILES_ACTIVE
